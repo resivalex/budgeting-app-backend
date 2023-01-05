@@ -1,0 +1,9 @@
+version: '3.9'
+services:
+  app:
+    container_name: budgeting-app-backend
+    build: .
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
