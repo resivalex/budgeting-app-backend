@@ -4,3 +4,4 @@
 .env
 docker-compose-dev.yml
 notebooks
+data

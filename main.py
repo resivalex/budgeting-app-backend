@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from typing import List
 from dotenv import load_dotenv
-from budgeting_app_backend.transactions import Example
+from budgeting_app_backend.transactions import CsvSource
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 
 load_dotenv()
@@ -27,4 +28,4 @@ async def root() -> str:
 
 @app.get('/transactions', tags=['State'])
 async def transactions() -> List:
-    return Example().all()
+    return CsvSource(path=os.getenv('CSV_PATH')).all()
