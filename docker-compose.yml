@@ -6,5 +6,7 @@ services:
     build: .
     env_file:
       - .env
+    volumes:
+      - "./data:/app/data"
     ports:
       - "${PORT:-8000}:8000"
