@@ -11,6 +11,8 @@ uvicorn = {extras = ["standard"], version = "^0.20.0"}
 pytest = "^7.2.0"
 jupyterlab = "^3.5.2"
 pandas = "^1.5.2"
+pycouchdb = "^1.14.2"
+python-multipart = "^0.0.5"
 
 
 [build-system]

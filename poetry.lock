@@ -1536,6 +1536,21 @@ files = [
 ]
 
 [[package]]
+name = "pycouchdb"
+version = "1.14.2"
+description = "Modern pure python CouchDB Client."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+files = [
+    {file = "pycouchdb-1.14.2-py2.py3-none-any.whl", hash = "sha256:434758aa6b49c6a67fcf89e71a11c36e2ec2df51e2998c38bcd570eab94cc288"},
+    {file = "pycouchdb-1.14.2.tar.gz", hash = "sha256:00bc6c7dd4744895920b9153cb9537bc5ecaff72002ea10209c05580e186e0eb"},
+]
+
+[package.dependencies]
+requests = ">=2.25,<3.0"
+
+[[package]]
 name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
@@ -1717,6 +1732,20 @@ files = [
     {file = "python-json-logger-2.0.4.tar.gz", hash = "sha256:764d762175f99fcc4630bd4853b09632acb60a6224acb27ce08cd70f0b1b81bd"},
     {file = "python_json_logger-2.0.4-py3-none-any.whl", hash = "sha256:3b03487b14eb9e4f77e4fc2a023358b5394b82fd89cecf5586259baed57d8c6f"},
 ]
+
+[[package]]
+name = "python-multipart"
+version = "0.0.5"
+description = "A streaming multipart parser for Python"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
+]
+
+[package.dependencies]
+six = ">=1.4.0"
 
 [[package]]
 name = "pytz"
@@ -2435,4 +2464,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "6eb322bb17c104a554d7644ebadf9e2e3fda82f8b7960a5b4d62415eadc91f9d"
+content-hash = "c676b8b3aea734af1c98a1ab12aa12833365d4c1f4c56f4a2881521e457d6815"

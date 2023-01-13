@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 from typing import List
 from dotenv import load_dotenv
-from budgeting_app_backend.transactions import CsvSource
+from budgeting_app_backend import DbSource, CsvImporting
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
@@ -28,4 +28,20 @@ async def root() -> str:
 
 @app.get('/transactions', tags=['State'])
 async def transactions() -> List:
-    return CsvSource(path=os.getenv('CSV_PATH')).all()
+    return DbSource(
+        url=os.getenv('DB_URL'),
+        name=os.getenv('DB_NAME')
+    ).all()
+
+
+@app.post('/importing', tags=['State'])
+async def importing(file: UploadFile):
+    content = file.file.read()
+    importing = CsvImporting(
+        url=os.getenv('DB_URL'),
+        name=os.getenv('DB_NAME')
+    )
+
+    importing.perform(content)
+
+    return 'OK'
