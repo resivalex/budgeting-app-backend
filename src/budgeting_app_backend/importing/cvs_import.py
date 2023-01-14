@@ -5,15 +5,14 @@ import io
 
 class CsvImporting:
 
-    def __init__(self, url, name):
+    def __init__(self, url):
         self.__server = pycouchdb.Server(url)
-        self.__name = name
 
     def perform(self, content: bytes):
         text = content.decode('utf8')
         records = _parse_text(text)
         s = self.__server
-        name = self.__name
+        name = 'budgeting'
 
         s.delete(name)
         s.create(name)
