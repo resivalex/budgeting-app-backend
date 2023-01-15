@@ -11,13 +11,20 @@ class CsvImporting:
     def perform(self, content: bytes):
         text = content.decode('utf8')
         records = _parse_text(text)
-        s = self.__server
-        name = 'budgeting'
-
-        s.delete(name)
-        s.create(name)
-        db = s.database(name)
+        db = self.__server.database('budgeting')
+        _clear_database(db)
         db.save_bulk(records)
+
+
+def _clear_database(db):
+    docs_to_delete = []
+    for row in db.query('_all_docs', include_docs=False):
+        docs_to_delete.append({
+            '_id': row['id'],
+            '_rev': row['value']['rev']
+        })
+
+    db.delete_bulk(docs_to_delete)
 
 
 def _parse_text(text: str):
