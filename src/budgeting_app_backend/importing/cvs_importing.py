@@ -12,7 +12,7 @@ class CsvImporting:
         text = content.decode('utf8')
         records = _parse_text(text)
         db = self.__server.database('budgeting')
-        _clear_database(db)
+        # _clear_database(db)
         db.save_bulk(records)
 
 
