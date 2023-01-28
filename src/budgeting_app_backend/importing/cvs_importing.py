@@ -24,7 +24,7 @@ def _clear_database(db):
             '_rev': row['value']['rev']
         })
 
-    db.delete_bulk(docs_to_delete)
+    db.delete_bulk(docs_to_delete, transaction=True)
 
 
 def _parse_text(text: str):
