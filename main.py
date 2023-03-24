@@ -11,6 +11,8 @@ load_dotenv()
 
 DB_URL = os.getenv('DB_URL')
 TOKEN = os.getenv('TOKEN')
+PASSWORD = os.getenv('PASSWORD')
+BACKEND_URL = os.getenv('BACKEND_URL')
 
 
 app = FastAPI(docs_url='/api')
@@ -33,6 +35,18 @@ def validate_token(token: str = None):
 @app.get('/', tags=['System'])
 async def root() -> str:
     return 'OK'
+
+
+@app.get('/config', tags=['System'])
+async def config(password: str):
+    if password != PASSWORD:
+        raise HTTPException(status_code=400, detail='Not authenticated')
+
+    return {
+        'backendUrl': BACKEND_URL,
+        'backendToken': TOKEN,
+        'dbUrl': DB_URL
+    }
 
 
 @app.get('/transactions', tags=['State'])
