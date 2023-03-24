@@ -43,7 +43,6 @@ async def config(password: str):
         raise HTTPException(status_code=400, detail='Not authenticated')
 
     return {
-        'backend_url': BACKEND_URL,
         'backend_token': TOKEN,
         'db_url': DB_URL
     }
