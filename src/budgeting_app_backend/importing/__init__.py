@@ -1,4 +1,4 @@
-from .cvs_importing import CsvImporting
+from .csv_importing import CsvImporting
 
 
 __all__ = ['CsvImporting']

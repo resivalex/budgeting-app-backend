@@ -1,8 +1,9 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 from typing import List
 from dotenv import load_dotenv
-from budgeting_app_backend import DbSource, CsvImporting
+from budgeting_app_backend import DbSource, CsvImporting, CsvExporting
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 import os
 
 
@@ -65,3 +66,20 @@ async def importing(file: UploadFile, token: str):
     csv_importing.perform(content)
 
     return 'OK'
+
+
+@app.get('/exporting', tags=['State'])
+async def exporting(token: str):
+    validate_token(token)
+
+    csv_exporting = CsvExporting(url=DB_URL)
+
+    csv_bytes = csv_exporting.perform().encode("utf-8")
+
+    return StreamingResponse(
+        iter([csv_bytes]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": "attachment;filename=export.csv"
+        }
+    )
