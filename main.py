@@ -1,12 +1,7 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 from typing import List
 from dotenv import load_dotenv
-from budgeting_app_backend import (
-    TransactionsDbSource,
-    TransactionsCsvImporting,
-    TransactionsCsvExporting,
-    Settings
-)
+from budgeting_app_backend import State
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import os
@@ -19,6 +14,7 @@ DB_URL = os.getenv('DB_URL')
 TOKEN = os.getenv('TOKEN')
 PASSWORD = os.getenv('PASSWORD')
 BACKEND_URL = os.getenv('BACKEND_URL')
+SQLITE_PATH = os.getenv('SQLITE_PATH')
 
 
 app = FastAPI(docs_url='/api')
@@ -36,6 +32,10 @@ app.add_middleware(
 def validate_token(token: str = None):
     if token != TOKEN:
         raise HTTPException(status_code=400, detail='Not authenticated')
+
+
+def create_state() -> State:
+    return State(sqlite_path=SQLITE_PATH, db_url=DB_URL)
 
 
 @app.get('/', tags=['System'])
@@ -58,18 +58,14 @@ async def config(password: str):
 async def settings(token: str) -> dict:
     validate_token(token)
 
-    settings = Settings()
-
-    return {
-        'transactions_uploaded_at': settings.get('transactions_uploaded_at')
-    }
+    return create_state().settings()
 
 
 @app.get('/transactions', tags=['State'])
 async def transactions(token: str) -> List:
     validate_token(token)
 
-    return TransactionsDbSource(url=DB_URL).all()
+    return create_state().transactions()
 
 
 @app.post('/importing', tags=['State'])
@@ -77,9 +73,7 @@ async def importing(file: UploadFile, token: str):
     validate_token(token)
 
     content = file.file.read()
-    csv_importing = TransactionsCsvImporting(url=DB_URL)
-
-    csv_importing.perform(content)
+    create_state().importing(content)
 
     return 'OK'
 
@@ -88,14 +82,12 @@ async def importing(file: UploadFile, token: str):
 async def exporting(token: str):
     validate_token(token)
 
-    csv_exporting = TransactionsCsvExporting(url=DB_URL)
-
-    csv_bytes = csv_exporting.perform().encode("utf-8")
+    csv_bytes = create_state().exporting()
 
     return StreamingResponse(
         iter([csv_bytes]),
-        media_type="text/csv",
+        media_type='text/csv',
         headers={
-            "Content-Disposition": "attachment;filename=export.csv"
+            'Content-Disposition': 'attachment;filename=export.csv'
         }
     )

@@ -1,13 +1,10 @@
 import sqlite3
 
 
-SQLITE_PATH = 'data/budgeting-app.sqlite3'
-
-
 class Settings:
 
-    def __init__(self):
-        self.__conn = sqlite3.connect(SQLITE_PATH)
+    def __init__(self, sqlite_path: str):
+        self.__conn = sqlite3.connect(sqlite_path)
         self.__conn.row_factory = sqlite3.Row
         self.__cursor = self.__conn.cursor()
 
