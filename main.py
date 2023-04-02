@@ -1,7 +1,12 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 from typing import List
 from dotenv import load_dotenv
-from budgeting_app_backend import DbSource, CsvImporting, CsvExporting
+from budgeting_app_backend import (
+    TransactionsDbSource,
+    TransactionsCsvImporting,
+    TransactionsCsvExporting,
+    Settings
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import os
@@ -49,11 +54,22 @@ async def config(password: str):
     }
 
 
+@app.get('/settings', tags=['State'])
+async def settings(token: str) -> dict:
+    validate_token(token)
+
+    settings = Settings()
+
+    return {
+        'transactions_uploaded_at': settings.get('transactions_uploaded_at')
+    }
+
+
 @app.get('/transactions', tags=['State'])
 async def transactions(token: str) -> List:
     validate_token(token)
 
-    return DbSource(url=DB_URL).all()
+    return TransactionsDbSource(url=DB_URL).all()
 
 
 @app.post('/importing', tags=['State'])
@@ -61,7 +77,7 @@ async def importing(file: UploadFile, token: str):
     validate_token(token)
 
     content = file.file.read()
-    csv_importing = CsvImporting(url=DB_URL)
+    csv_importing = TransactionsCsvImporting(url=DB_URL)
 
     csv_importing.perform(content)
 
@@ -72,7 +88,7 @@ async def importing(file: UploadFile, token: str):
 async def exporting(token: str):
     validate_token(token)
 
-    csv_exporting = CsvExporting(url=DB_URL)
+    csv_exporting = TransactionsCsvExporting(url=DB_URL)
 
     csv_bytes = csv_exporting.perform().encode("utf-8")
 
