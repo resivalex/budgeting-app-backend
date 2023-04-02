@@ -13,7 +13,7 @@ class Dump:
         self.__conn.close()
 
     def put(self, content: str) -> None:
-        uploaded_at = datetime.now().isoformat()
+        uploaded_at = datetime.utcnow().isoformat()
 
         self.__cursor.execute('''
             INSERT INTO dumps

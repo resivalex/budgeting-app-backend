@@ -23,7 +23,7 @@ class State:
         dump.put(csv_exporting.perform().encode('utf-8'))
 
         settings = Settings(sqlite_path=self._sqlite_path)
-        settings.set('transactions_uploaded_at', datetime.now().isoformat())
+        settings.set('transactions_uploaded_at', datetime.utcnow().isoformat())
 
         csv_importing = TransactionsCsvImporting(url=self._db_url)
         csv_importing.perform(content)

@@ -27,3 +27,4 @@ class Settings:
             VALUES
             (:name, :value)
         ''', {'name': name, 'value': value})
+        self.__conn.commit()
