@@ -91,3 +91,12 @@ async def exporting(token: str):
             'Content-Disposition': 'attachment;filename=export.csv'
         }
     )
+
+
+@app.post('/dump', tags=['Debug'])
+async def dump(token: str):
+    validate_token(token)
+
+    create_state().dump()
+
+    return 'OK'
