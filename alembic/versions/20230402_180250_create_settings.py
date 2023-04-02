@@ -7,6 +7,7 @@ Create Date: 2023-04-02 18:02:50.953634
 """
 from alembic import op
 import sqlalchemy as sa
+from datetime import datetime
 
 
 # revision identifiers, used by Alembic.
@@ -22,6 +23,12 @@ def upgrade() -> None:
         sa.Column('name', sa.String(length=255), primary_key=True),
         sa.Column('value', sa.String(length=255), nullable=False)
     )
+    op.execute(f'''
+        INSERT INTO settings
+        (name, value)
+        VALUES
+        ('transactions_uploaded_at', '{datetime.utcnow().isoformat()}')
+    ''')
 
 
 def downgrade() -> None:
