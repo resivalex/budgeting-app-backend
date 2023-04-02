@@ -9,9 +9,10 @@ RUN pip install poetry~=1.3.1 \
     && poetry config virtualenvs.path /app/.venv-docker
 RUN poetry install
 
+ADD alembic alembic
 ADD src src
 RUN poetry install
 
-ADD ["main.py", "pytest.ini", "./"]
+ADD ["main.py", "pytest.ini", "alembic.ini", "./"]
 
 CMD ["poetry", "run", "uvicorn", "main:app", "--host=0.0.0.0", "--port=8000"]

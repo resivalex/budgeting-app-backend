@@ -13,6 +13,7 @@ jupyterlab = "^3.5.2"
 pandas = "^1.5.2"
 pycouchdb = "^1.14.2"
 python-multipart = "^0.0.5"
+alembic = "^1.10.2"
 
 
 [build-system]
