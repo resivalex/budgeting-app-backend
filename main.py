@@ -1,13 +1,10 @@
+import budgeting_app_backend.load_env # noqa
 from fastapi import FastAPI, UploadFile, HTTPException
 from typing import List
-from dotenv import load_dotenv
 from budgeting_app_backend import State
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import os
-
-
-load_dotenv()
 
 
 DB_URL = os.getenv('DB_URL')

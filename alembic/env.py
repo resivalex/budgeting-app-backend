@@ -1,3 +1,6 @@
+import budgeting_app_backend.load_env # noqa
+import os
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -24,6 +27,9 @@ target_metadata = None
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+
+config.set_main_option('sqlite_path', os.getenv('SQLITE_PATH'))
 
 
 def run_migrations_offline() -> None:
