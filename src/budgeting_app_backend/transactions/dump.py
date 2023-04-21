@@ -1,24 +1,19 @@
-import sqlite3
 from datetime import datetime
+
+from budgeting_app_backend.protocols import SqlConnectionProtocol
 
 
 class Dump:
 
-    def __init__(self, sqlite_path: str):
-        self.__conn = sqlite3.connect(sqlite_path)
-        self.__conn.row_factory = sqlite3.Row
-        self.__cursor = self.__conn.cursor()
-
-    def __del__(self):
-        self.__conn.close()
+    def __init__(self, sql_connection: SqlConnectionProtocol):
+        self._sql_connection = sql_connection
 
     def put(self, content: str) -> None:
         uploaded_at = datetime.utcnow().isoformat()
 
-        self.__cursor.execute('''
+        self._sql_connection.write('''
             INSERT INTO dumps
             (uploaded_at, content)
             VALUES
             (:uploaded_at, :content)
         ''', {'uploaded_at': uploaded_at, 'content': content})
-        self.__conn.commit()

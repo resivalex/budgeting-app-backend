@@ -1,7 +1,7 @@
 import budgeting_app_backend.load_env # noqa
 from fastapi import FastAPI, UploadFile, HTTPException
 from typing import List
-from budgeting_app_backend import State
+from budgeting_app_backend import State, SqliteConnection
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import os
@@ -32,7 +32,8 @@ def validate_token(token: str = None):
 
 
 def create_state() -> State:
-    return State(sqlite_path=SQLITE_PATH, db_url=DB_URL)
+    sqlite_connection = SqliteConnection(sqlite_path=SQLITE_PATH)
+    return State(sql_connection=sqlite_connection, db_url=DB_URL)
 
 
 @app.get('/', tags=['System'])

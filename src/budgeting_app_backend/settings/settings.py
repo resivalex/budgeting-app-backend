@@ -1,30 +1,24 @@
-import sqlite3
+from budgeting_app_backend.protocols import SqlConnectionProtocol
 
 
 class Settings:
 
-    def __init__(self, sqlite_path: str):
-        self.__conn = sqlite3.connect(sqlite_path)
-        self.__conn.row_factory = sqlite3.Row
-        self.__cursor = self.__conn.cursor()
-
-    def __del__(self):
-        self.__conn.close()
+    def __init__(self, sql_connection: SqlConnectionProtocol):
+        self._sql_connection = sql_connection
 
     def get(self, name: str) -> str:
-        self.__cursor.execute('''
+        row = self._sql_connection.read_one('''
             SELECT value
             FROM settings
             WHERE name = :name
         ''', {'name': name})
-        row = self.__cursor.fetchone()
+
         return row['value'] if row else None
 
     def set(self, name: str, value: str) -> None:
-        self.__cursor.execute('''
+        self._sql_connection.write('''
             INSERT OR REPLACE INTO settings
             (name, value)
             VALUES
             (:name, :value)
         ''', {'name': name, 'value': value})
-        self.__conn.commit()
