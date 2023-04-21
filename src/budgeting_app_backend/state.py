@@ -9,6 +9,12 @@ from .transactions import (
     DbSource as TransactionsDbSource,
     Dump as TransactionsDump
 )
+from .budgets import (
+    SpendingLimits,
+    CurrencyConfig,
+    SpendingLimitsValue,
+    CurrencyConfigValue
+)
 
 
 class State:
@@ -22,6 +28,8 @@ class State:
         self._db_url = db_url
         self._sql_connection = sql_connection
         self._settings = settings
+        self._spending_limits = SpendingLimits(settings=settings)
+        self._currency_config = CurrencyConfig(settings=settings)
 
     def importing(self, content: bytes):
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
@@ -53,3 +61,15 @@ class State:
 
         dump = TransactionsDump(sql_connection=self._sql_connection)
         dump.put(content)
+
+    def set_currency_config(self, value: CurrencyConfigValue):
+        self._currency_config.set(value)
+
+    def get_currency_config(self):
+        return self._currency_config.get()
+
+    def set_spending_limits(self, value: SpendingLimitsValue):
+        self._spending_limits.set(value)
+
+    def get_spending_limits(self):
+        return self._spending_limits.get()

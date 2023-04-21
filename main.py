@@ -1,7 +1,13 @@
 import budgeting_app_backend.load_env # noqa
 from fastapi import FastAPI, UploadFile, HTTPException
 from typing import List
-from budgeting_app_backend import State, SqliteConnection, Settings
+from budgeting_app_backend import (
+    State,
+    CurrencyConfigValue,
+    SpendingLimitsValue,
+    SqliteConnection,
+    Settings
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import os
@@ -99,3 +105,35 @@ async def dump(token: str):
     create_state().dump()
 
     return 'OK'
+
+
+@app.post('/currency_config', tags=['State'])
+async def set_currency_config(value: CurrencyConfigValue, token: str):
+    validate_token(token)
+
+    create_state().set_currency_config(value)
+
+    return 'OK'
+
+
+@app.get('/currency_config', tags=['State'])
+async def get_currency_config(token: str) -> CurrencyConfigValue:
+    validate_token(token)
+
+    return create_state().get_currency_config()
+
+
+@app.post('/spending_limits', tags=['State'])
+async def set_spending_limits(value: SpendingLimitsValue, token: str):
+    validate_token(token)
+
+    create_state().set_spending_limits(value)
+
+    return 'OK'
+
+
+@app.get('/spending_limits', tags=['State'])
+async def get_spending_limits(token: str) -> SpendingLimitsValue:
+    validate_token(token)
+
+    return create_state().get_spending_limits()
