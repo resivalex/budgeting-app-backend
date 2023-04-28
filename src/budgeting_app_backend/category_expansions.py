@@ -10,7 +10,7 @@ class CategoryExpansion(BaseModel):
 
 
 class CategoryExpansionsValue(BaseModel):
-    categoryExpansions: List[CategoryExpansion]
+    expansions: List[CategoryExpansion]
 
 
 class CategoryExpansions:
