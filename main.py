@@ -5,6 +5,7 @@ from budgeting_app_backend import (
     State,
     CurrencyConfigValue,
     SpendingLimitsValue,
+    CategoryExpansionsValue,
     SqliteConnection,
     Settings
 )
@@ -137,3 +138,19 @@ async def get_spending_limits(token: str) -> SpendingLimitsValue:
     validate_token(token)
 
     return create_state().get_spending_limits()
+
+
+@app.post('/category_expansions', tags=['State'])
+async def set_category_expansion(value: CategoryExpansionsValue, token: str):
+    validate_token(token)
+
+    create_state().set_category_expansions(value)
+
+    return 'OK'
+
+
+@app.get('/category_expansions', tags=['State'])
+async def get_category_expansion(token: str) -> CategoryExpansionsValue:
+    validate_token(token)
+
+    return create_state().get_category_expansions()

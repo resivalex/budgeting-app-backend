@@ -15,6 +15,10 @@ from .budgets import (
     SpendingLimitsValue,
     CurrencyConfigValue
 )
+from .category_expansions import (
+    CategoryExpansions,
+    CategoryExpansionsValue
+)
 
 
 class State:
@@ -30,6 +34,7 @@ class State:
         self._settings = settings
         self._spending_limits = SpendingLimits(settings=settings)
         self._currency_config = CurrencyConfig(settings=settings)
+        self._category_expansions = CategoryExpansions(settings=settings)
 
     def importing(self, content: bytes):
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
@@ -73,3 +78,9 @@ class State:
 
     def get_spending_limits(self):
         return self._spending_limits.get()
+
+    def set_category_expansions(self, value: CategoryExpansionsValue):
+        self._category_expansions.set(value)
+
+    def get_category_expansions(self):
+        return self._category_expansions.get()
