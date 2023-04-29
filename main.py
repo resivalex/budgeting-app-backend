@@ -1,5 +1,5 @@
 import budgeting_app_backend.load_env # noqa
-from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi import FastAPI, UploadFile, HTTPException, Request
 from typing import List
 from budgeting_app_backend import (
     State,
@@ -11,7 +11,9 @@ from budgeting_app_backend import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.openapi.utils import get_openapi
 import os
+import re
 
 
 DB_URL = os.getenv('DB_URL')
@@ -33,15 +35,26 @@ app.add_middleware(
 )
 
 
-def validate_token(token: str = None):
-    if token != TOKEN:
-        raise HTTPException(status_code=400, detail='Not authenticated')
-
-
 def create_state() -> State:
     sqlite_connection = SqliteConnection(sqlite_path=SQLITE_PATH)
     app_settings = Settings(sql_connection=sqlite_connection)
     return State(sql_connection=sqlite_connection, db_url=DB_URL, settings=app_settings)
+
+
+def check_authorization(request: Request):
+    authorization = request.headers.get('authorization')
+
+    if not authorization:
+        raise HTTPException(status_code=401, detail='Authorization header not found')
+
+    matches = re.match(r'^Bearer ([^ ]+)$', authorization)
+    if not matches:
+        raise HTTPException(status_code=401, detail='Authorization must be in format "Bearer TOKEN"')
+
+    token = matches[1]
+
+    if token != TOKEN:
+        raise HTTPException(status_code=400, detail='Not authenticated')
 
 
 @app.get('/', tags=['System'])
@@ -61,22 +74,22 @@ async def config(password: str):
 
 
 @app.get('/settings', tags=['State'])
-async def settings(token: str) -> dict:
-    validate_token(token)
+async def settings(request: Request) -> dict:
+    check_authorization(request)
 
     return create_state().settings()
 
 
 @app.get('/transactions', tags=['State'])
-async def transactions(token: str) -> List:
-    validate_token(token)
+async def transactions(request: Request) -> List:
+    check_authorization(request)
 
     return create_state().transactions()
 
 
 @app.post('/importing', tags=['State'])
-async def importing(file: UploadFile, token: str):
-    validate_token(token)
+async def importing(file: UploadFile, request: Request):
+    check_authorization(request)
 
     content = file.file.read()
     create_state().importing(content)
@@ -85,8 +98,8 @@ async def importing(file: UploadFile, token: str):
 
 
 @app.get('/exporting', tags=['State'])
-async def exporting(token: str):
-    validate_token(token)
+async def exporting(request: Request):
+    check_authorization(request)
 
     csv_bytes = create_state().exporting()
 
@@ -100,8 +113,8 @@ async def exporting(token: str):
 
 
 @app.post('/dump', tags=['Debug'])
-async def dump(token: str):
-    validate_token(token)
+async def dump(request: Request):
+    check_authorization(request)
 
     create_state().dump()
 
@@ -109,8 +122,8 @@ async def dump(token: str):
 
 
 @app.post('/currency_config', tags=['State'])
-async def set_currency_config(value: CurrencyConfigValue, token: str):
-    validate_token(token)
+async def set_currency_config(value: CurrencyConfigValue, request: Request):
+    check_authorization(request)
 
     create_state().set_currency_config(value)
 
@@ -118,15 +131,15 @@ async def set_currency_config(value: CurrencyConfigValue, token: str):
 
 
 @app.get('/currency_config', tags=['State'])
-async def get_currency_config(token: str) -> CurrencyConfigValue:
-    validate_token(token)
+async def get_currency_config(request: Request) -> CurrencyConfigValue:
+    check_authorization(request)
 
     return create_state().get_currency_config()
 
 
 @app.post('/spending_limits', tags=['State'])
-async def set_spending_limits(value: SpendingLimitsValue, token: str):
-    validate_token(token)
+async def set_spending_limits(value: SpendingLimitsValue, request: Request):
+    check_authorization(request)
 
     create_state().set_spending_limits(value)
 
@@ -134,15 +147,15 @@ async def set_spending_limits(value: SpendingLimitsValue, token: str):
 
 
 @app.get('/spending_limits', tags=['State'])
-async def get_spending_limits(token: str) -> SpendingLimitsValue:
-    validate_token(token)
+async def get_spending_limits(request: Request) -> SpendingLimitsValue:
+    check_authorization(request)
 
     return create_state().get_spending_limits()
 
 
 @app.post('/category_expansions', tags=['State'])
-async def set_category_expansion(value: CategoryExpansionsValue, token: str):
-    validate_token(token)
+async def set_category_expansion(value: CategoryExpansionsValue, request: Request):
+    check_authorization(request)
 
     create_state().set_category_expansions(value)
 
@@ -150,7 +163,34 @@ async def set_category_expansion(value: CategoryExpansionsValue, token: str):
 
 
 @app.get('/category_expansions', tags=['State'])
-async def get_category_expansion(token: str) -> CategoryExpansionsValue:
-    validate_token(token)
+async def get_category_expansion(request: Request) -> CategoryExpansionsValue:
+    check_authorization(request)
 
     return create_state().get_category_expansions()
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    openapi_schema = get_openapi(
+        title='Budgeting App API',
+        version='0.1.0',
+        description='Budgeting App API',
+        routes=app.routes,
+    )
+    if 'securitySchemes' not in openapi_schema['components']:
+        openapi_schema['components']['securitySchemes'] = {}
+    openapi_schema['components']['securitySchemes']['bearerAuth'] = {
+        'type': 'http',
+        'scheme': 'bearer',
+        'bearerFormat': 'TOKEN'
+    }
+    openapi_schema['security'] = [{'bearerAuth': []}]
+
+    app.openapi_schema = openapi_schema
+
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
