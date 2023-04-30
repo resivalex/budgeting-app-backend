@@ -4,11 +4,16 @@ from typing import List
 from budgeting_app_backend.protocols import SettingsProtocol
 
 
-class SpendingLimit(BaseModel):
-    name: str
+class MonthLimit(BaseModel):
+    date: str
     currency: str
     amount: float
+
+
+class SpendingLimit(BaseModel):
+    name: str
     categories: List[str]
+    month_limits: List[MonthLimit]
 
 
 class SpendingLimitsValue(BaseModel):
