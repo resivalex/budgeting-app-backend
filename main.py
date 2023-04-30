@@ -121,22 +121,6 @@ async def dump(request: Request):
     return 'OK'
 
 
-@app.post('/currency_config', tags=['State'])
-async def set_currency_config(value: CurrencyConfigValue, request: Request):
-    check_authorization(request)
-
-    create_state().set_currency_config(value)
-
-    return 'OK'
-
-
-@app.get('/currency_config', tags=['State'])
-async def get_currency_config(request: Request) -> CurrencyConfigValue:
-    check_authorization(request)
-
-    return create_state().get_currency_config()
-
-
 @app.post('/spending_limits', tags=['State'])
 async def set_spending_limits(value: SpendingLimitsValue, request: Request):
     check_authorization(request)
