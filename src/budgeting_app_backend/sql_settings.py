@@ -1,7 +1,7 @@
 from budgeting_app_backend.protocols import SqlConnectionProtocol
 
 
-class Settings:
+class SqlSettings:
 
     def __init__(self, sql_connection: SqlConnectionProtocol):
         self._sql_connection = sql_connection

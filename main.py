@@ -3,11 +3,10 @@ from fastapi import FastAPI, UploadFile, HTTPException, Request
 from typing import List
 from budgeting_app_backend import (
     State,
-    CurrencyConfigValue,
     SpendingLimitsValue,
     CategoryExpansionsValue,
     SqliteConnection,
-    Settings
+    SqlSettings
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -37,7 +36,7 @@ app.add_middleware(
 
 def create_state() -> State:
     sqlite_connection = SqliteConnection(sqlite_path=SQLITE_PATH)
-    app_settings = Settings(sql_connection=sqlite_connection)
+    app_settings = SqlSettingsStore(sql_connection=sqlite_connection)
     return State(sql_connection=sqlite_connection, db_url=DB_URL, settings=app_settings)
 
 

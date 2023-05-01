@@ -9,13 +9,11 @@ from .transactions import (
     DbSource as TransactionsDbSource,
     Dump as TransactionsDump
 )
-from .budgets import (
+from .settings import (
     SpendingLimits,
-    CurrencyConfig,
-    SpendingLimitsValue,
-    CurrencyConfigValue
+    SpendingLimitsValue
 )
-from .category_expansions import (
+from budgeting_app_backend.settings.category_expansions import (
     CategoryExpansions,
     CategoryExpansionsValue
 )
@@ -33,7 +31,6 @@ class State:
         self._sql_connection = sql_connection
         self._settings = settings
         self._spending_limits = SpendingLimits(settings=settings)
-        self._currency_config = CurrencyConfig(settings=settings)
         self._category_expansions = CategoryExpansions(settings=settings)
 
     def importing(self, content: bytes):
@@ -66,12 +63,6 @@ class State:
 
         dump = TransactionsDump(sql_connection=self._sql_connection)
         dump.put(content)
-
-    def set_currency_config(self, value: CurrencyConfigValue):
-        self._currency_config.set(value)
-
-    def get_currency_config(self):
-        return self._currency_config.get()
 
     def set_spending_limits(self, value: SpendingLimitsValue):
         self._spending_limits.set(value)
