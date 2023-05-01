@@ -5,6 +5,8 @@ from budgeting_app_backend import (
     State,
     SpendingLimitsValue,
     CategoryExpansionsValue,
+    AccountPropertiesValue,
+    UploadDetailsValue,
     SqliteConnection,
     SqlSettings
 )
@@ -36,7 +38,7 @@ app.add_middleware(
 
 def create_state() -> State:
     sqlite_connection = SqliteConnection(sqlite_path=SQLITE_PATH)
-    app_settings = SqlSettingsStore(sql_connection=sqlite_connection)
+    app_settings = SqlSettings(sql_connection=sqlite_connection)
     return State(sql_connection=sqlite_connection, db_url=DB_URL, settings=app_settings)
 
 
@@ -73,7 +75,7 @@ async def config(password: str):
 
 
 @app.get('/settings', tags=['State'])
-async def settings(request: Request) -> dict:
+async def settings(request: Request) -> UploadDetailsValue:
     check_authorization(request)
 
     return create_state().settings()
@@ -120,7 +122,7 @@ async def dump(request: Request):
     return 'OK'
 
 
-@app.post('/spending_limits', tags=['State'])
+@app.post('/spending-limits', tags=['State'])
 async def set_spending_limits(value: SpendingLimitsValue, request: Request):
     check_authorization(request)
 
@@ -129,14 +131,14 @@ async def set_spending_limits(value: SpendingLimitsValue, request: Request):
     return 'OK'
 
 
-@app.get('/spending_limits', tags=['State'])
+@app.get('/spending-limits', tags=['State'])
 async def get_spending_limits(request: Request) -> SpendingLimitsValue:
     check_authorization(request)
 
     return create_state().get_spending_limits()
 
 
-@app.post('/category_expansions', tags=['State'])
+@app.post('/category-expansions', tags=['State'])
 async def set_category_expansion(value: CategoryExpansionsValue, request: Request):
     check_authorization(request)
 
@@ -145,11 +147,27 @@ async def set_category_expansion(value: CategoryExpansionsValue, request: Reques
     return 'OK'
 
 
-@app.get('/category_expansions', tags=['State'])
+@app.get('/category-expansions', tags=['State'])
 async def get_category_expansion(request: Request) -> CategoryExpansionsValue:
     check_authorization(request)
 
     return create_state().get_category_expansions()
+
+
+@app.post('/account-properties', tags=['State'])
+async def set_account_properties(value: AccountPropertiesValue, request: Request):
+    check_authorization(request)
+
+    create_state().set_account_properties(value)
+
+    return 'OK'
+
+
+@app.get('/account-properties', tags=['State'])
+async def get_account_properties(request: Request) -> AccountPropertiesValue:
+    check_authorization(request)
+
+    return create_state().get_account_properties()
 
 
 def custom_openapi():

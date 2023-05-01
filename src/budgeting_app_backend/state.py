@@ -11,11 +11,13 @@ from .transactions import (
 )
 from .settings import (
     SpendingLimits,
-    SpendingLimitsValue
-)
-from budgeting_app_backend.settings.category_expansions import (
+    SpendingLimitsValue,
     CategoryExpansions,
-    CategoryExpansionsValue
+    CategoryExpansionsValue,
+    AccountProperties,
+    AccountPropertiesValue,
+    UploadDetails,
+    UploadDetailsValue
 )
 
 
@@ -29,9 +31,10 @@ class State:
     ):
         self._db_url = db_url
         self._sql_connection = sql_connection
-        self._settings = settings
         self._spending_limits = SpendingLimits(settings=settings)
         self._category_expansions = CategoryExpansions(settings=settings)
+        self._account_properties = AccountProperties(settings=settings)
+        self._upload_details = UploadDetails(settings=settings)
 
     def importing(self, content: bytes):
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
@@ -39,7 +42,7 @@ class State:
         dump = TransactionsDump(sql_connection=self._sql_connection)
         dump.put(csv_exporting.perform().encode('utf-8'))
 
-        self._settings.set('transactions_uploaded_at', datetime.utcnow().isoformat())
+        self._upload_details.set(uploaded_at=datetime.utcnow().isoformat())
 
         csv_importing = TransactionsCsvImporting(url=self._db_url)
         csv_importing.perform(content)
@@ -52,10 +55,8 @@ class State:
     def transactions(self) -> List:
         return TransactionsDbSource(url=self._db_url).all()
 
-    def settings(self) -> dict:
-        return {
-            'transactions_uploaded_at': self._settings.get('transactions_uploaded_at')
-        }
+    def settings(self) -> UploadDetailsValue:
+        return self._upload_details.get()
 
     def dump(self):
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
@@ -75,3 +76,9 @@ class State:
 
     def get_category_expansions(self):
         return self._category_expansions.get()
+
+    def set_account_properties(self, value: AccountPropertiesValue):
+        self._account_properties.set(value)
+
+    def get_account_properties(self):
+        return self._account_properties.get()
