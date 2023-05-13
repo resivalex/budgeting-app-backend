@@ -12,6 +12,7 @@ class MonthLimit(BaseModel):
 
 class SpendingLimit(BaseModel):
     name: str
+    color: str
     categories: List[str]
     month_limits: List[MonthLimit]
 
