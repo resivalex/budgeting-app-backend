@@ -3,7 +3,6 @@ from typing import Dict, List, Optional
 
 
 class SqlConnectionProtocol(Protocol):
-
     def read(self, sql: str, params: Dict[str, str]) -> List[Dict]:
         ...
 

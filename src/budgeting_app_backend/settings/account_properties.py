@@ -14,12 +14,11 @@ class AccountPropertiesValue(BaseModel):
 
 
 class AccountProperties:
-
     def __init__(self, settings: SettingsProtocol):
         self._settings = settings
 
     def get(self) -> AccountPropertiesValue:
-        setting_value = self._settings.get('account_properties')
+        setting_value = self._settings.get("account_properties")
 
         if setting_value is None:
             return AccountPropertiesValue(accounts=[])
@@ -27,4 +26,4 @@ class AccountProperties:
         return AccountPropertiesValue.parse_raw(setting_value)
 
     def set(self, value: AccountPropertiesValue):
-        self._settings.set('account_properties', value.json())
+        self._settings.set("account_properties", value.json())

@@ -38,12 +38,11 @@ class SpendingLimitsValue(BaseModel):
 
 
 class SpendingLimits:
-
     def __init__(self, settings: SettingsProtocol):
         self._settings = settings
 
     def get(self) -> SpendingLimitsValue:
-        return SpendingLimitsValue.parse_raw(self._settings.get('spending_limits'))
+        return SpendingLimitsValue.parse_raw(self._settings.get("spending_limits"))
 
     def set(self, value: SpendingLimitsValue):
-        self._settings.set('spending_limits', value.json())
+        self._settings.set("spending_limits", value.json())

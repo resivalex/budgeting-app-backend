@@ -14,12 +14,11 @@ class CategoryExpansionsValue(BaseModel):
 
 
 class CategoryExpansions:
-
     def __init__(self, settings: SettingsProtocol):
         self._settings = settings
 
     def get(self) -> CategoryExpansionsValue:
-        setting_value = self._settings.get('category_expansions')
+        setting_value = self._settings.get("category_expansions")
 
         if setting_value is None:
             return CategoryExpansionsValue(categoryExpansions=[])
@@ -27,4 +26,4 @@ class CategoryExpansions:
         return CategoryExpansionsValue.parse_raw(setting_value)
 
     def set(self, value: CategoryExpansionsValue):
-        self._settings.set('category_expansions', value.json())
+        self._settings.set("category_expansions", value.json())

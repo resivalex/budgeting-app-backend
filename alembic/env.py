@@ -1,4 +1,4 @@
-import budgeting_app_backend.load_env # noqa
+import budgeting_app_backend.load_env  # noqa
 import os
 
 from logging.config import fileConfig
@@ -29,7 +29,7 @@ target_metadata = None
 # ... etc.
 
 
-config.set_main_option('sqlite_path', os.getenv('SQLITE_PATH'))
+config.set_main_option("sqlite_path", os.getenv("SQLITE_PATH"))
 
 
 def run_migrations_offline() -> None:
@@ -70,9 +70,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

@@ -1,4 +1,4 @@
-import budgeting_app_backend.load_env # noqa
+import budgeting_app_backend.load_env  # noqa
 from fastapi import FastAPI, UploadFile, HTTPException, Request
 from typing import List
 from budgeting_app_backend import (
@@ -8,7 +8,7 @@ from budgeting_app_backend import (
     AccountPropertiesValue,
     UploadDetailsValue,
     SqliteConnection,
-    SqlSettings
+    SqlSettings,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -17,22 +17,22 @@ import os
 import re
 
 
-DB_URL = os.getenv('DB_URL')
-TOKEN = os.getenv('TOKEN')
-PASSWORD = os.getenv('PASSWORD')
-BACKEND_URL = os.getenv('BACKEND_URL')
-SQLITE_PATH = os.getenv('SQLITE_PATH')
+DB_URL = os.getenv("DB_URL")
+TOKEN = os.getenv("TOKEN")
+PASSWORD = os.getenv("PASSWORD")
+BACKEND_URL = os.getenv("BACKEND_URL")
+SQLITE_PATH = os.getenv("SQLITE_PATH")
 
 
-app = FastAPI(docs_url='/api')
+app = FastAPI(docs_url="/api")
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*'],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -43,62 +43,61 @@ def create_state() -> State:
 
 
 def check_authorization(request: Request):
-    authorization = request.headers.get('authorization')
+    authorization = request.headers.get("authorization")
 
     if not authorization:
-        raise HTTPException(status_code=401, detail='Authorization header not found')
+        raise HTTPException(status_code=401, detail="Authorization header not found")
 
-    matches = re.match(r'^Bearer ([^ ]+)$', authorization)
+    matches = re.match(r"^Bearer ([^ ]+)$", authorization)
     if not matches:
-        raise HTTPException(status_code=401, detail='Authorization must be in format "Bearer TOKEN"')
+        raise HTTPException(
+            status_code=401, detail='Authorization must be in format "Bearer TOKEN"'
+        )
 
     token = matches[1]
 
     if token != TOKEN:
-        raise HTTPException(status_code=400, detail='Not authenticated')
+        raise HTTPException(status_code=400, detail="Not authenticated")
 
 
-@app.get('/', tags=['System'])
+@app.get("/", tags=["System"])
 async def root() -> str:
-    return 'OK'
+    return "OK"
 
 
-@app.get('/config', tags=['System'])
+@app.get("/config", tags=["System"])
 async def config(password: str):
     if password != PASSWORD:
-        raise HTTPException(status_code=400, detail='Not authenticated')
+        raise HTTPException(status_code=400, detail="Not authenticated")
 
-    return {
-        'backend_token': TOKEN,
-        'db_url': DB_URL
-    }
+    return {"backend_token": TOKEN, "db_url": DB_URL}
 
 
-@app.get('/settings', tags=['State'])
+@app.get("/settings", tags=["State"])
 async def settings(request: Request) -> UploadDetailsValue:
     check_authorization(request)
 
     return create_state().settings()
 
 
-@app.get('/transactions', tags=['State'])
+@app.get("/transactions", tags=["State"])
 async def transactions(request: Request) -> List:
     check_authorization(request)
 
     return create_state().transactions()
 
 
-@app.post('/importing', tags=['State'])
+@app.post("/importing", tags=["State"])
 async def importing(file: UploadFile, request: Request):
     check_authorization(request)
 
     content = file.file.read()
     create_state().importing(content)
 
-    return 'OK'
+    return "OK"
 
 
-@app.get('/exporting', tags=['State'])
+@app.get("/exporting", tags=["State"])
 async def exporting(request: Request):
     check_authorization(request)
 
@@ -106,64 +105,62 @@ async def exporting(request: Request):
 
     return StreamingResponse(
         iter([csv_bytes]),
-        media_type='text/csv',
-        headers={
-            'Content-Disposition': 'attachment;filename=export.csv'
-        }
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment;filename=export.csv"},
     )
 
 
-@app.post('/dump', tags=['Debug'])
+@app.post("/dump", tags=["Debug"])
 async def dump(request: Request):
     check_authorization(request)
 
     create_state().dump()
 
-    return 'OK'
+    return "OK"
 
 
-@app.post('/spending-limits', tags=['State'])
+@app.post("/spending-limits", tags=["State"])
 async def set_spending_limits(value: SpendingLimitsValue, request: Request):
     check_authorization(request)
 
     create_state().set_spending_limits(value)
 
-    return 'OK'
+    return "OK"
 
 
-@app.get('/spending-limits', tags=['State'])
+@app.get("/spending-limits", tags=["State"])
 async def get_spending_limits(request: Request) -> SpendingLimitsValue:
     check_authorization(request)
 
     return create_state().get_spending_limits()
 
 
-@app.post('/category-expansions', tags=['State'])
+@app.post("/category-expansions", tags=["State"])
 async def set_category_expansion(value: CategoryExpansionsValue, request: Request):
     check_authorization(request)
 
     create_state().set_category_expansions(value)
 
-    return 'OK'
+    return "OK"
 
 
-@app.get('/category-expansions', tags=['State'])
+@app.get("/category-expansions", tags=["State"])
 async def get_category_expansion(request: Request) -> CategoryExpansionsValue:
     check_authorization(request)
 
     return create_state().get_category_expansions()
 
 
-@app.post('/account-properties', tags=['State'])
+@app.post("/account-properties", tags=["State"])
 async def set_account_properties(value: AccountPropertiesValue, request: Request):
     check_authorization(request)
 
     create_state().set_account_properties(value)
 
-    return 'OK'
+    return "OK"
 
 
-@app.get('/account-properties', tags=['State'])
+@app.get("/account-properties", tags=["State"])
 async def get_account_properties(request: Request) -> AccountPropertiesValue:
     check_authorization(request)
 
@@ -175,19 +172,19 @@ def custom_openapi():
         return app.openapi_schema
 
     openapi_schema = get_openapi(
-        title='Budgeting App API',
-        version='0.1.0',
-        description='Budgeting App API',
+        title="Budgeting App API",
+        version="0.1.0",
+        description="Budgeting App API",
         routes=app.routes,
     )
-    if 'securitySchemes' not in openapi_schema['components']:
-        openapi_schema['components']['securitySchemes'] = {}
-    openapi_schema['components']['securitySchemes']['bearerAuth'] = {
-        'type': 'http',
-        'scheme': 'bearer',
-        'bearerFormat': 'TOKEN'
+    if "securitySchemes" not in openapi_schema["components"]:
+        openapi_schema["components"]["securitySchemes"] = {}
+    openapi_schema["components"]["securitySchemes"]["bearerAuth"] = {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "TOKEN",
     }
-    openapi_schema['security'] = [{'bearerAuth': []}]
+    openapi_schema["security"] = [{"bearerAuth": []}]
 
     app.openapi_schema = openapi_schema
 

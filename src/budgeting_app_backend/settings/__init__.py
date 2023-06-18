@@ -5,12 +5,12 @@ from .upload_details import UploadDetails, UploadDetailsValue
 
 
 __all__ = [
-    'CategoryExpansions',
-    'CategoryExpansionsValue',
-    'SpendingLimits',
-    'SpendingLimitsValue',
-    'AccountProperties',
-    'AccountPropertiesValue',
-    'UploadDetails',
-    'UploadDetailsValue'
+    "CategoryExpansions",
+    "CategoryExpansionsValue",
+    "SpendingLimits",
+    "SpendingLimitsValue",
+    "AccountProperties",
+    "AccountPropertiesValue",
+    "UploadDetails",
+    "UploadDetailsValue",
 ]

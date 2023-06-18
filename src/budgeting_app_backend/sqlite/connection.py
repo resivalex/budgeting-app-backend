@@ -3,7 +3,6 @@ from typing import Dict, List, Optional
 
 
 class Connection:
-
     def __init__(self, sqlite_path: str):
         self.__conn = sqlite3.connect(sqlite_path)
         self.__conn.row_factory = sqlite3.Row

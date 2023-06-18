@@ -5,10 +5,7 @@ from budgeting_app_backend.protocols import SqlConnectionProtocol, SettingsProto
 
 from .exporting import CsvExporting as TransactionsCsvExporting
 from .importing import CsvImporting as TransactionsCsvImporting
-from .transactions import (
-    DbSource as TransactionsDbSource,
-    Dump as TransactionsDump
-)
+from .transactions import DbSource as TransactionsDbSource, Dump as TransactionsDump
 from .settings import (
     SpendingLimits,
     SpendingLimitsValue,
@@ -17,17 +14,16 @@ from .settings import (
     AccountProperties,
     AccountPropertiesValue,
     UploadDetails,
-    UploadDetailsValue
+    UploadDetailsValue,
 )
 
 
 class State:
-
     def __init__(
-            self,
-            db_url: str,
-            sql_connection: SqlConnectionProtocol,
-            settings: SettingsProtocol
+        self,
+        db_url: str,
+        sql_connection: SqlConnectionProtocol,
+        settings: SettingsProtocol,
     ):
         self._db_url = db_url
         self._sql_connection = sql_connection
@@ -40,7 +36,7 @@ class State:
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
 
         dump = TransactionsDump(sql_connection=self._sql_connection)
-        dump.put(csv_exporting.perform().encode('utf-8'))
+        dump.put(csv_exporting.perform().encode("utf-8"))
 
         self._upload_details.set(uploaded_at=datetime.utcnow().isoformat())
 
@@ -50,7 +46,7 @@ class State:
     def exporting(self) -> bytes:
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
 
-        return csv_exporting.perform().encode('utf-8')
+        return csv_exporting.perform().encode("utf-8")
 
     def transactions(self) -> List:
         return TransactionsDbSource(url=self._db_url).all()
@@ -60,7 +56,7 @@ class State:
 
     def dump(self):
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
-        content = csv_exporting.perform().encode('utf-8')
+        content = csv_exporting.perform().encode("utf-8")
 
         dump = TransactionsDump(sql_connection=self._sql_connection)
         dump.put(content)

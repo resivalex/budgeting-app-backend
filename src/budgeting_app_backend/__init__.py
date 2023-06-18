@@ -3,18 +3,18 @@ from .state import (
     SpendingLimitsValue,
     CategoryExpansionsValue,
     AccountPropertiesValue,
-    UploadDetailsValue
+    UploadDetailsValue,
 )
 from .sqlite import SqliteConnection
 from .sql_settings import SqlSettings
 
 
 __all__ = [
-    'State',
-    'SpendingLimitsValue',
-    'CategoryExpansionsValue',
-    'AccountPropertiesValue',
-    'UploadDetailsValue',
-    'SqliteConnection',
-    'SqlSettings'
+    "State",
+    "SpendingLimitsValue",
+    "CategoryExpansionsValue",
+    "AccountPropertiesValue",
+    "UploadDetailsValue",
+    "SqliteConnection",
+    "SqlSettings",
 ]

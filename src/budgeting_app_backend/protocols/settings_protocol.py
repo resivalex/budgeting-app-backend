@@ -2,7 +2,6 @@ from typing import Protocol
 
 
 class SettingsProtocol(Protocol):
-
     def get(self, name: str) -> str:
         ...
 

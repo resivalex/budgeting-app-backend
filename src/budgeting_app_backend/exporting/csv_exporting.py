@@ -4,30 +4,29 @@ import io
 
 
 class CsvExporting:
-
     def __init__(self, url):
         self.__server = pycouchdb.Server(url)
 
     def perform(self):
-        db = _get_or_create_database(self.__server, 'budgeting')
+        db = _get_or_create_database(self.__server, "budgeting")
         records = db.all()
-        records = [doc['doc'] for doc in records]
+        records = [doc["doc"] for doc in records]
         columns = [
-            'datetime',
-            'account',
-            'category',
-            'type',
-            'amount',
-            'currency',
-            'payee',
-            'comment'
+            "datetime",
+            "account",
+            "category",
+            "type",
+            "amount",
+            "currency",
+            "payee",
+            "comment",
         ]
         if len(records) == 0:
             df = pd.DataFrame(columns=columns)
         else:
             df = pd.DataFrame(records)
-            df = df.drop(columns=['_id', '_rev'])
-            df = df.sort_values(by=['datetime'], ascending=False)
+            df = df.drop(columns=["_id", "_rev"])
+            df = df.sort_values(by=["datetime"], ascending=False)
             df = df[columns]
 
         stream = io.StringIO()
