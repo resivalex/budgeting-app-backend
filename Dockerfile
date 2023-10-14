@@ -4,8 +4,7 @@ WORKDIR /app
 
 # Install project python dependencies
 ADD ["pyproject.toml", "poetry.lock", "./"]
-RUN ulimit -n 4096
-RUN pip install --upgrade pip
+RUN --cap-add=SYS_THREAD pip install --upgrade pip
 RUN pip install poetry~=1.3.1 \
     && poetry config virtualenvs.in-project false \
     && poetry config virtualenvs.path /app/.venv-docker
