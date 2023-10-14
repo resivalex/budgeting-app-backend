@@ -5,8 +5,8 @@ WORKDIR /app
 # Install project python dependencies
 ADD ["pyproject.toml", "poetry.lock", "./"]
 RUN pip install --upgrade pip
-RUN curl -sSL https://install.python-poetry.org | python -
-RUN poetry config virtualenvs.in-project false \
+RUN pip install poetry~=1.3.1 \
+    && poetry config virtualenvs.in-project false \
     && poetry config virtualenvs.path /app/.venv-docker
 RUN poetry install
 
