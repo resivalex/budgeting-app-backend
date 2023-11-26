@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.11
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ WORKDIR /app
 ADD ["pyproject.toml", "poetry.lock", "./"]
 ENV PIP_NO_CONCURRENCY=1
 RUN pip install --upgrade pip
-RUN pip install poetry~=1.3.1 \
+RUN pip install poetry~=1.7.1 \
     && poetry config virtualenvs.in-project false \
     && poetry config virtualenvs.path /app/.venv-docker
 RUN poetry install
