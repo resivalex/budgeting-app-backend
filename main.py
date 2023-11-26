@@ -4,6 +4,7 @@ from typing import List
 from budgeting_app_backend import (
     State,
     SpendingLimitsValue,
+    MonthSliceSpendingLimitsValue,
     CategoryExpansionsValue,
     AccountPropertiesValue,
     UploadDetailsValue,
@@ -133,6 +134,22 @@ async def get_spending_limits(request: Request) -> SpendingLimitsValue:
     check_authorization(request)
 
     return create_state().get_spending_limits()
+
+
+@app.post("/spending-limits/month-budget", tags=["State"])
+async def set_budget_month_limit(value: MonthSliceSpendingLimitsValue, request: Request):
+    check_authorization(request)
+
+    create_state().set_budget_month_limit(value)
+
+    return "OK"
+
+
+@app.get("/spending-limits/month-budget", tags=["State"])
+async def set_budget_month_limit(month: str, request: Request) -> MonthSliceSpendingLimitsValue:
+    check_authorization(request)
+
+    return create_state().get_budget_month_limit(month)
 
 
 @app.post("/category-expansions", tags=["State"])

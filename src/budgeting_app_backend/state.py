@@ -9,6 +9,7 @@ from .transactions import DbSource as TransactionsDbSource, Dump as Transactions
 from .settings import (
     SpendingLimits,
     SpendingLimitsValue,
+    MonthSliceSpendingLimitsValue,
     CategoryExpansions,
     CategoryExpansionsValue,
     AccountProperties,
@@ -66,6 +67,12 @@ class State:
 
     def get_spending_limits(self):
         return self._spending_limits.get()
+
+    def set_budget_month_limit(self, value: MonthSliceSpendingLimitsValue):
+        self._spending_limits.set_month_budget(value)
+
+    def get_budget_month_limit(self, month: str) -> MonthSliceSpendingLimitsValue:
+        return self._spending_limits.get_month_budget(month)
 
     def set_category_expansions(self, value: CategoryExpansionsValue):
         self._category_expansions.set(value)
