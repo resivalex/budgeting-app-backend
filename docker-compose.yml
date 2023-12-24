@@ -1,12 +1,15 @@
 version: '3.9'
 services:
-  app:
-    container_name: budgeting-app-backend
+  budgeting_app_backend:
+    container_name: budgeting_app_backend
     command: '/bin/bash -c "poetry run alembic upgrade head && poetry run uvicorn main:app --host=0.0.0.0 --port=8000"'
     build: .
     env_file:
       - .env
     volumes:
       - "./data:/app/data"
-    ports:
-      - "${PORT:-8000}:8000"
+    networks:
+      - web
+networks:
+  web:
+    external: true
