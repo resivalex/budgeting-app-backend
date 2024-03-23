@@ -50,6 +50,11 @@ class MonthSliceSpendingLimitsValue(BaseModel):
     currency_config: CurrencyConfigValue
 
 
+class MonthItemSpendingLimitValue(BaseModel):
+    date: str
+    limit: MonthSliceSpendingLimit
+
+
 class SpendingLimits:
     def __init__(self, settings: SettingsProtocol):
         self._settings = settings
@@ -72,14 +77,18 @@ class SpendingLimits:
             currency_config=currency_config,
         )
 
-    def _get_currency_config(self, value: SpendingLimitsValue, date: str) -> CurrencyConfigValue:
+    def _get_currency_config(
+        self, value: SpendingLimitsValue, date: str
+    ) -> CurrencyConfigValue:
         for month_currency_config in value.month_currency_configs:
             if month_currency_config.date == date:
                 return month_currency_config.config
 
         raise Exception(f"Currency config for {date} not found")
 
-    def _get_month_slice_limits(self, value: SpendingLimitsValue, date: str) -> List[MonthSliceSpendingLimit]:
+    def _get_month_slice_limits(
+        self, value: SpendingLimitsValue, date: str
+    ) -> List[MonthSliceSpendingLimit]:
         month_slice_limits = []
         for limit in value.limits:
             for month_limit in limit.month_limits:
@@ -97,8 +106,12 @@ class SpendingLimits:
         updated_value = self.get()
 
         date = value.date
-        updated_value = self._update_currency_config(updated_value, date, value.currency_config)
-        updated_value = self._update_month_slice_limits(updated_value, date, value.limits)
+        updated_value = self._update_currency_config(
+            updated_value, date, value.currency_config
+        )
+        updated_value = self._update_month_slice_limits(
+            updated_value, date, value.limits
+        )
 
         self.set(updated_value)
 
@@ -135,7 +148,9 @@ class SpendingLimits:
         new_limit_names = set([limit.name for limit in limits])
 
         if new_limit_names - current_limit_names:
-            raise Exception(f"Unknown limit names: {new_limit_names - current_limit_names}")
+            raise Exception(
+                f"Unknown limit names: {new_limit_names - current_limit_names}"
+            )
 
         for month_slice_limit in limits:
             for limit in value.limits:
@@ -158,3 +173,13 @@ class SpendingLimits:
                         )
 
         return value
+
+    def set_month_budget_item(self, value: MonthItemSpendingLimitValue):
+        updated_value = self.get()
+
+        date = value.date
+        updated_value = self._update_month_slice_limits(
+            updated_value, date, [value.limit]
+        )
+
+        self.set(updated_value)

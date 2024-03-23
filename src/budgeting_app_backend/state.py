@@ -10,6 +10,7 @@ from .settings import (
     SpendingLimits,
     SpendingLimitsValue,
     MonthSliceSpendingLimitsValue,
+    MonthItemSpendingLimitValue,
     CategoryExpansions,
     CategoryExpansionsValue,
     AccountProperties,
@@ -73,6 +74,9 @@ class State:
 
     def get_budget_month_limit(self, month: str) -> MonthSliceSpendingLimitsValue:
         return self._spending_limits.get_month_budget(month)
+
+    def set_budget_month_item_limit(self, value: MonthItemSpendingLimitValue):
+        self._spending_limits.set_month_budget_item(value)
 
     def set_category_expansions(self, value: CategoryExpansionsValue):
         self._category_expansions.set(value)
