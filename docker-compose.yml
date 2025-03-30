@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   budgeting_app_backend:
     container_name: budgeting_app_backend
