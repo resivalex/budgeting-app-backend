@@ -5,7 +5,7 @@ from budgeting_app_backend.protocols import SqlConnectionProtocol, SettingsProto
 
 from .exporting import CsvExporting as TransactionsCsvExporting
 from .importing import CsvImporting as TransactionsCsvImporting
-from .transactions import DbSource as TransactionsDbSource, Dump as TransactionsDump
+from .transactions import DbSource as TransactionsDbSource, GoogleDriveDump as TransactionsGoogleDriveDump
 from .settings import (
     SpendingLimits,
     SpendingLimitsValue,
@@ -26,6 +26,8 @@ class State:
         db_url: str,
         sql_connection: SqlConnectionProtocol,
         settings: SettingsProtocol,
+        google_drive_credentials_path: str = None,
+        google_drive_folder_id: str = None,
     ):
         self._db_url = db_url
         self._sql_connection = sql_connection
@@ -33,11 +35,17 @@ class State:
         self._category_expansions = CategoryExpansions(settings=settings)
         self._account_properties = AccountProperties(settings=settings)
         self._upload_details = UploadDetails(settings=settings)
+        self._google_drive_credentials_path = google_drive_credentials_path
+        self._google_drive_folder_id = google_drive_folder_id
 
     def importing(self, content: bytes):
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
-
-        dump = TransactionsDump(sql_connection=self._sql_connection)
+        
+        # Use Google Drive for dumps during import
+        dump = TransactionsGoogleDriveDump(
+            credentials_path=self._google_drive_credentials_path,
+            folder_id=self._google_drive_folder_id
+        )
         dump.put(csv_exporting.perform().encode("utf-8"))
 
         self._upload_details.set(uploaded_at=datetime.utcnow().isoformat())
@@ -60,8 +68,13 @@ class State:
         csv_exporting = TransactionsCsvExporting(url=self._db_url)
         content = csv_exporting.perform().encode("utf-8")
 
-        dump = TransactionsDump(sql_connection=self._sql_connection)
-        dump.put(content)
+        dump = TransactionsGoogleDriveDump(
+            credentials_path=self._google_drive_credentials_path,
+            folder_id=self._google_drive_folder_id
+        )
+        upload_result = dump.put(content)
+
+        return upload_result
 
     def set_spending_limits(self, value: SpendingLimitsValue):
         self._spending_limits.set(value)

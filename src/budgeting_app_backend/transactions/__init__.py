@@ -1,5 +1,5 @@
 from .db_source import DbSource
-from .dump import Dump
+from .google_drive_dump import GoogleDriveDump
 
 
-__all__ = ["DbSource", "Dump"]
+__all__ = ["DbSource", "GoogleDriveDump"]

@@ -5,3 +5,4 @@
 docker-compose-dev.yml
 notebooks
 data
+credentials
