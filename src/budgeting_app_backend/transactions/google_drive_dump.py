@@ -2,17 +2,14 @@ from budgeting_app_backend.services import GoogleDriveService
 
 
 class GoogleDriveDump:
-    """
-    Handles transaction data dumps to Google Drive.
-    """
+    """Transaction data dumps to Google Drive."""
     
     def __init__(self, credentials_path=None, folder_id=None):
-        """
-        Initialize the GoogleDriveDump with Google Drive service.
+        """Initialize with Google Drive service.
         
         Args:
-            credentials_path: Path to the service account credentials JSON file
-            folder_id: ID of the Google Drive folder to use for uploads
+            credentials_path: Path to service account credentials JSON
+            folder_id: Google Drive folder ID for uploads
         """
         self._google_drive = GoogleDriveService(
             credentials_path=credentials_path,
@@ -20,13 +17,12 @@ class GoogleDriveDump:
         )
         
     def put(self, content: bytes) -> dict:
-        """
-        Upload transaction dump content to Google Drive.
+        """Upload transaction dump to Google Drive.
         
         Args:
             content: CSV data as bytes
             
         Returns:
-            Dictionary with upload details (file ID, name, link)
+            Dict with file ID, name, and link
         """
         return self._google_drive.upload_file(content)
