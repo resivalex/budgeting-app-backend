@@ -1,124 +1,105 @@
-Here's a more friendly and concise version of your `README.md` file for the project "Budgeting App Backend":
-
 # Welcome to the Budgeting App Backend! 🚀
 
-This is the powerhouse of the Budgeting App. It's a backend application built with FastAPI that handles all your personal budgeting and expense data.
+This backend application, built with FastAPI, handles your personal budgeting and expense data.
 
-## What's Inside? 📦
-- [How to Get Started?](#getting-started-)
-- [What Can I Do with it?](#api-endpoints-)
-- [How is it Built?](#code-structure-)
-- [How Do I Make it Mine?](#development-)
-- [Who Helped Make This?](#acknowledgments-)
-- [Can I Help Too?](#contribution-)
-- [What about the Legal Stuff?](#license-)
-- [Who Do I Talk to?](#contact-)
+- [Getting Started](#getting-started-)
+- [Google Drive Integration & Backup](#google-drive-integration---backup-)
+- [API Endpoints](#api-endpoints-)
+- [Code Structure](#code-structure-)
+- [Development](#development-)
+- [Acknowledgments](#acknowledgments-)
+- [Contribution](#contribution-)
+- [License](#license-)
+- [Contact](#contact-)
 
 ## Getting Started 🚀
 
-1. Copy the repository: `git clone https://github.com/resivalex/budgeting-app-backend.git`
-2. Install what's necessary: `poetry install`
-3. Set up your environment variables. (Don't worry, we'll tell you where everything goes.)
-4. Set up Google Drive credentials (see [Google Drive Integration](#google-drive-integration-))
-5. Start the server: `poetry run uvicorn main:app --reload`
-6. Voilà! You can now access the backend at `http://localhost:8000`.
+1.  Clone the repository: `git clone https://github.com/resivalex/budgeting-app-backend.git`
+2.  Navigate into the directory: `cd budgeting-app-backend`
+3.  Install dependencies: `poetry install`
+4.  Set up environment variables (copy `.env.example` to `.env` if available, then edit).
+5.  Set up Google Drive credentials (see [Google Drive Integration & Backup](#google-drive-integration---backup-)).
+6.  Run database migrations: `poetry run alembic upgrade head`
+7.  Start the server: `poetry run uvicorn main:app --reload`
+8.  Access the backend at `http://localhost:8000`.
 
-## Google Drive Integration 🔄
+## Google Drive Integration & Backup 🔄🕒
 
-The Budgeting App uses Google Drive exclusively for backing up transaction dumps. Here's how to set it up:
+This app uses Google Drive for daily automated backups of transaction data as CSV files.
 
-1. Create a Google Cloud Project at [console.cloud.google.com](https://console.cloud.google.com/)
-2. Enable the Google Drive API for your project
-3. Create a Service Account in the Google Cloud Console:
-   - Go to "IAM & Admin" > "Service Accounts"
-   - Click "Create Service Account"
-   - Give it a name like "budgeting-app-service"
-   - Grant it the "Drive API > Drive File Creator" role
-4. Create and download the JSON key for this service account
-5. Save the JSON key to your `credentials` folder as `google-drive-credentials.json`
-6. Create a folder in Google Drive where you want to store your transaction dumps
-7. Share this folder with the service account email (it will look like `service-account-name@project-id.iam.gserviceaccount.com`)
-8. Get the folder ID from the URL when you open the folder (it's the long string in the URL after `/folders/`)
-9. Add these variables to your `.env` file:
-   ```
-   GOOGLE_DRIVE_CREDENTIALS_PATH=credentials/google-drive-credentials.json
-   GOOGLE_DRIVE_FOLDER_ID=your_google_drive_folder_id
-   
-   # Optional: Configure the daily backup schedule (24-hour format, UTC timezone)
-   DAILY_DUMP_HOUR=3
-   DAILY_DUMP_MINUTE=0
-   ```
+**Setup:**
 
-Transaction data will be automatically backed up to Google Drive daily at the configured time (default: 3:00 AM UTC).
+1.  Create a Google Cloud Project at [console.cloud.google.com](https://console.cloud.google.com/).
+2.  Enable the Google Drive API.
+3.  Create a Service Account:
+    *   Go to "IAM & Admin" > "Service Accounts".
+    *   Click "Create Service Account" (e.g., "budgeting-app-service").
+    *   Grant it the "Drive API > Drive File Creator" role.
+4.  Create and download the JSON key for this service account.
+5.  Save the key to `credentials/google-drive-credentials.json`.
+6.  Create a Google Drive folder for backups.
+7.  Share this folder with the service account email (`service-account-name@project-id.iam.gserviceaccount.com`).
+8.  Note the folder ID from the URL (the string after `/folders/`).
+9.  Add these variables to your `.env` file:
+    ```dotenv
+    GOOGLE_DRIVE_CREDENTIALS_PATH=credentials/google-drive-credentials.json
+    GOOGLE_DRIVE_FOLDER_ID=your_google_drive_folder_id
 
-## Scheduled Data Backup 🕒
+    # Optional: Configure daily backup time (24-hour format, UTC)
+    DAILY_DUMP_HOUR=3
+    DAILY_DUMP_MINUTE=0
+    ```
 
-The application includes an automatic daily backup system that:
-
-1. Exports all transaction data as CSV
-2. Uploads it to your configured Google Drive folder
-3. Names the file with a timestamp for easy identification
-4. Runs daily at your configured time (default: 3:00 AM UTC)
-
-You can configure the backup time by setting these environment variables:
-- `DAILY_DUMP_HOUR`: Hour of the day in 24-hour format (0-23)
-- `DAILY_DUMP_MINUTE`: Minute of the hour (0-59)
-
-For manual backups, use the `/trigger-dump` endpoint.
+Backups run daily at the configured time (default: 3:00 AM UTC), named with a timestamp.
 
 ## API Endpoints 🌐
 
-The Budgeting App Backend offers you these API endpoints:
+Explore the available API endpoints (viewable at `/docs` when the server is running):
 
-- `System`: Check the system health.
-- `Configuration`: Retrieve the backend configuration.
-- `State`: Get app settings, transactions, and import or export transactions.
-- `Admin`: Administrative functions like manually triggering backups.
-
-Each endpoint does something special. Feel free to explore them!
+-   **System**: Check system health.
+-   **Configuration**: Retrieve backend configuration.
+-   **State**: Manage app settings, transactions (import/export).
+-   **Admin**: Administrative functions, including manually triggering a data dump to Google Drive via `/trigger-dump`.
 
 ## Code Structure 🏗️
 
-Here's a sneak peek into our project's blueprint:
-
-- `budgeting_app_backend/` - The brain of our app.
-- `main.py` - The entry point of our application and the FastAPI app configuration.
-- `requirements.txt` - A list of Python dependencies required by the project.
-- `README.md` - Hey, that's this file!
+-   `src/budgeting_app_backend/`: Core application logic.
+-   `main.py`: FastAPI app entry point and configuration.
+-   `alembic/`: Database migration scripts (using Alembic).
+-   `pyproject.toml`: Project metadata and dependencies (managed by Poetry).
+-   `README.md`: This file.
 
 ## Development 💻
 
-Want to make the Budgeting App Backend your own? Here's how:
-
-1. Clone the repository and install the dependencies.
-2. Make your changes to the code.
-3. Run the server for testing with live reloading. See your changes in real-time!
-4. Test the endpoints using an API client of your choice.
+1.  Clone the repo and install dependencies (`poetry install`).
+2.  Make code changes.
+3.  Run the server (`poetry run uvicorn main:app --reload`) for live testing.
+4.  Use an API client or the `/docs` UI to test endpoints.
 
 ## Acknowledgments 👏
 
-A big shoutout to these wonderful open-source libraries and frameworks that make our app possible:
+Built with the help of these great open-source libraries:
 
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [PyCouchDB](https://github.com/andrewsmedina/pycouchdb)
-- [pandas](https://pandas.pydata.org/)
-- [pydantic](https://pydantic-docs.helpmanual.io/)
-- [Google API Python Client](https://github.com/googleapis/google-api-python-client)
-- [APScheduler](https://apscheduler.readthedocs.io/)
-- [tabulate](https://pypi.org/project/tabulate/)
+-   [FastAPI](https://fastapi.tiangolo.com/)
+-   [SQLAlchemy](https://www.sqlalchemy.org/) (with Alembic for migrations)
+-   [pandas](https://pandas.pydata.org/)
+-   [pydantic](https://pydantic-docs.helpmanual.io/)
+-   [Google API Python Client](https://github.com/googleapis/google-api-python-client)
+-   [APScheduler](https://apscheduler.readthedocs.io/)
+-   [tabulate](https://pypi.org/project/tabulate/)
 
 ## Contribution 🤝
 
-Want to contribute to the Budgeting App Backend? Great! Follow the steps in the "Development" section and then send a pull request with your changes. We appreciate all the help we can get!
+Contributions are welcome! Follow the "Development" steps and submit a pull request.
 
 ## License 📝
 
-The Budgeting App Backend is free and open-source, under the [MIT License](LICENSE).
+[MIT License](LICENSE).
 
 ## Contact 📞
 
-Got questions? Suggestions? Issues? Reach out to us or open an issue on our GitHub repository. We'd love to hear from you!
+Questions or issues? Open an issue on the GitHub repository.
 
 ---
 
-We hope this `README.md` gives you a clear overview of the Budgeting App Backend, its features, and how to get it up and running on your local machine. The code is quite user-friendly, but if you have any questions or need further help, don't hesitate to ask. We believe in making budgeting easier for everyone, and your feedback helps us do just that. Enjoy exploring and happy budgeting! 🎉
+Happy budgeting! 🎉
